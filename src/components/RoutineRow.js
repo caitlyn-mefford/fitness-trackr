@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TableRow, TableCell, TextField } from "@material-ui/core";
 import {
   Create as CreateIcon,
   Save as SaveIcon,
   Delete as DeleteIcon,
 } from "@material-ui/icons";
+import { getActivities } from "../api";
+const FITNESS_TRACKR_API_URL='https://fitnesstrac-kr.herokuapp.com/api/'
+
 
 const RoutineRow = ({
   routine: { id, name, goal, creatorName, isPublic },
@@ -14,6 +17,24 @@ const RoutineRow = ({
   const [routineName, setRoutineName] = useState(name);
   const [routineGoal, setRoutineGoal] = useState(goal);
   const [editMode, setEditMode] = useState(false);
+  const [activity, setActivity] = useState("");
+  const [activitiesList, setActivitiesList] = useState([]);
+
+  useEffect(() => {
+    getActivities()
+      .then((activitiesList) => {
+        setActivitiesList(activitiesList);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [setActivitiesList]);
+
+  const HandleFormSubmit = (event) => {
+    event.preventDefault();
+    const selectedIndex = event.target.options.selectedIndex;
+    const id = event.target.options[selectedIndex].getAttribute("data-key");
+  };
 
   const onEdit = () => {
     setEditMode(true);
@@ -21,7 +42,7 @@ const RoutineRow = ({
 
   const onSave = (id) => {
     setEditMode(false);
-    fetch(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}/MyRoutines/${id}`, {
+    fetch(`${FITNESS_TRACKR_API_URL}routines/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -41,7 +62,7 @@ const RoutineRow = ({
 
   const onDelete = (id) => {
     onRemoveRoutine();
-    fetch(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}/MyRoutines/${id}`, {
+    fetch(`${FITNESS_TRACKR_API_URL}routines/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -86,6 +107,25 @@ const RoutineRow = ({
       </TableCell>
       <TableCell align='right'>{creatorName}</TableCell>
       <TableCell align='right'>{isPublic}</TableCell>
+
+      <fieldset style={{ width: "15px" }}>
+        <label htmlFor='select-activity'></label>
+        <select
+          value={activity}
+          onChange={(event) => {
+            setActivity({ HandleFormSubmit });
+          }}>
+          <option value='add activity'>Add Activity</option>
+          {activitiesList.map((activity) => (
+            <option
+              key={activity.id}
+              value={activity.name}
+              data-key={activity.id}>
+              {activity.name}
+            </option>
+          ))}
+        </select>
+      </fieldset>
       <TableCell align='right'>
         {editMode ? (
           <SaveIcon

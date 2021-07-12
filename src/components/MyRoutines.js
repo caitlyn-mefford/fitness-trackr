@@ -1,64 +1,103 @@
-import { Button, TextField } from "@material-ui/core";
-import { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+import {
+  Paper,
+  TableContainer,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+} from "@material-ui/core";
+import RoutineRow from "./RoutineRow";
+const FITNESS_TRACKR_API_URL='https://fitnesstrac-kr.herokuapp.com/api/'
 
-const Login = () => {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
-  const [errorMessage, setErrorMessage] = useState();
-
-  const loginUser = async () => {
-    return await axios
-      .post(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}users/login`, {
-        username,
-        password,
+const myUsernameFetch = (myToken) => {
+  try {
+    return axios
+      .get(`${FITNESS_TRACKR_API_URL}users/me`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${myToken}`,
+        },
       })
-      .then(({ data: { token } }) => {
-        if (token) {
-          localStorage.setItem("token", JSON.stringify(token));
-          window.location.href = `${window.location.origin}/Home`;
-        } else {
-          setErrorMessage("Something went wrong");
-          // show some error message
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-
-        setErrorMessage("Something went wrong");
-        // set some error message
+      .then(({ data: { username } }) => {
+        return username;
       });
-  };
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  const onFormSubmit = (event) => {
-    event.preventDefault();
-    loginUser();
+const myRoutinesFetch = (username, myToken) => {
+  try {
+    return axios
+      .get(
+        `${FITNESS_TRACKR_API_URL}users/${username}/routines`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${myToken}`,
+          },
+        }
+      )
+      .then(({ data }) => {
+        return data;
+      });
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const MyRoutines = () => {
+  let myUsername;
+  const [myRoutines, setMyRoutines] = useState([]);
+
+  useEffect(async () => {
+    const myToken = JSON.parse(localStorage.getItem("token"));
+    if (myToken) {
+      myUsername = await myUsernameFetch(myToken);
+      const routines = await myRoutinesFetch(myUsername, myToken);
+      setMyRoutines(routines);
+    }
+  }, []);
+
+  const onRemoveRoutine = (idx) => {
+    const copy = [...myRoutines];
+    copy.splice(idx, 1);
+    setMyRoutines(copy);
   };
 
   return (
-    <>
-      {errorMessage}
-      <form noValidate autoComplete='off' onSubmit={onFormSubmit}>
-        <TextField
-          id='username'
-          label='Username'
-          onInput={(event) => {
-            setUsername(event.target.value);
-          }}
-        />
-        <TextField
-          id='password'
-          type='password'
-          label='Password'
-          onInput={(event) => {
-            setPassword(event.target.value);
-          }}
-        />
-        <Button type='submit'>Login</Button>
-      </form>
-    </>
+    <TableContainer component={Paper}>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell align='right'>ID</TableCell>
+            <TableCell align='right'>Name</TableCell>
+            <TableCell align='right'>Goal</TableCell>
+            <TableCell align='right'>Creator Name</TableCell>
+            <TableCell align='right'>Is Public</TableCell>
+            <TableCell align='right'></TableCell>
+            <TableCell align='right'></TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {myRoutines.map((routine, idx) => {
+            return (
+              <RoutineRow
+                key={routine.id}
+                routine={routine}
+                onRemoveRoutine={() => {
+                  onRemoveRoutine(idx);
+                }}
+              />
+            );
+          })}
+        </TableBody>
+      </Table>
+    </TableContainer>
   );
 };
 
-export default Login;
+export default MyRoutines;

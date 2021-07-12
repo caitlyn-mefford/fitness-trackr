@@ -10,13 +10,14 @@ import {
   TableCell,
   TableBody,
 } from "@material-ui/core";
+const FITNESS_TRACKR_API_URL='https://fitnesstrac-kr.herokuapp.com/api/'
 
 const Routines = () => {
   const [routines, setRoutines] = useState();
 
   useEffect(() => {
     axios
-      .get(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}routines`)
+      .get(`${FITNESS_TRACKR_API_URL}routines`)
       .then(({ data }) => {
         if (data.length) {
           setRoutines(data);

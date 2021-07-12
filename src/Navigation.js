@@ -1,12 +1,12 @@
 import React from "react";
 import { Tabs, Tab, AppBar } from "@material-ui/core";
 import {
-  routines,
-  home,
-  myroutines,
-  activities,
-  login,
-  register,
+  Routines,
+  Home,
+  MyRoutines,
+  Activities,
+  Login,
+  Register,
 } from "./components";
 
 const Navigation = (props) => {
@@ -51,12 +51,12 @@ const Navigation = (props) => {
           <Tab label='Register' />
         </Tabs>
       </AppBar>
-      {selectedTab === 0 && <home />}
-      {selectedTab === 1 && <routines />}
-      {selectedTab === 2 && <myroutines />}
-      {selectedTab === 3 && <activities />}
-      {selectedTab === 4 && <login />}
-      {selectedTab === 5 && <register />}
+      {selectedTab === 0 && <Home />}
+      {selectedTab === 1 && <Routines />}
+      {selectedTab === 2 && <MyRoutines />}
+      {selectedTab === 3 && <Activities />}
+      {selectedTab === 4 && <Login />}
+      {selectedTab === 5 && <Register />}
     </>
   );
 };
