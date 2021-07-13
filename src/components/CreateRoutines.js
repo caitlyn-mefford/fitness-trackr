@@ -1,146 +1,69 @@
+import axios from "axios";
 import React, { useState } from "react";
 
-import {
-  Button,
-  TextField,
-  Typography,
-  Container,
-  makeStyles,
-} from "@material-ui/core";
-import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import { getCurrentUser} from "../api";
+import { Button, TextField } from "@material-ui/core";
 
-const CreateRoutine = () => {
+const CreateRoutine = ({ myRoutines, setMyRoutines }) => {
   const [routineName, setRoutineName] = useState("");
   const [routineGoal, setRoutineGoal] = useState("");
+  const [ setError] = useState(null);
 
-   const createRoutine = async (name, goal) => {
+  async function createRoutine(name, goal) {
     try {
-      const myToken = getCurrentUser();
-  
-      const response = await fetch(
-        `${process.env.REACT_APP_FITNESS_TRACKR_API_URL}routines`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${myToken}`,
-          },
-          body: JSON.stringify({
-            name,
-            goal,
-            isPublic: true,
-          }),
-        }
-      );
-  
-      const data = await response.json();
-      return data;
+      const token = JSON.parse(localStorage.getItem("token"));
+      axios
+        .post(
+          `${process.env.REACT_APP_FITNESS_TRACKR_API_URL}routines`,
+          { name, goal },
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        .then(({ data }) => {
+          const newRoutines = [...myRoutines];
+          newRoutines.push(data);
+          setMyRoutines(newRoutines);
+        });
     } catch (error) {
       console.log(error);
+      setError("Routine Name already in use!");
     }
   }
-  
-
-
-  createRoutine();
-
-  const onFormSubmit = (event) => {
-    event.preventDefault();
-    createRoutine(routineName, routineGoal);
-  };
-
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      "& .MuiTextField-root": {
-        margin: theme.spacing(1),
-        width: "25ch",
-      },
-    },
-    btn: {
-      fontSize: 20,
-      backgroundColor: "#E2725A",
-      "&:hover": {
-        backgroundColor: "#94ACBF",
-      },
-    },
-    title: {
-      marginTop: 20,
-
-      color: "#79AEB2",
-      fontSize: 40,
-    },
-    subTitle: {
-      color: "#79AEB2",
-      fontSize: 30,
-    },
-    textField: {
-      color: "white",
-      backgroundColor: "white",
-    },
-    form: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      height: "30vh",
-    },
-  }));
-  const classes = useStyles();
-
   return (
     <>
-      <div className={classes.root}>
-        <Container>
-          <Typography
-            className={classes.title}
-            variant='h6'
-            color='secondary'
-            component='h2'
-            align='center'
-            gutterBottom>
-            My Routines
-          </Typography>
-          <form
-            noValidate
-            autoComplete='off'
-            onSubmit={onFormSubmit}
-            className={classes.form}>
-            <TextField
-              className={classes.textField}
-              required
-              id='outlined-required'
-              label='Required'
-              variant='outlined'
-              color='#F9DDD2'
-              defaultValue='Name'
-              onInput={(event) => {
-                setRoutineName(event.target.value);
-              }}
-            />
-            <TextField
-              className={classes.textField}
-              required
-              id='outlined-required'
-              label='Required'
-              variant='outlined'
-              color='#F9DDD2'
-              defaultValue='Goal'
-              onInput={(event) => {
-                setRoutineGoal(event.target.value);
-              }}
-            />
-            <Button
-              className={classes.btn}
-              type='submit'
-              color='secondary'
-              variant='contained'
-              endIcon={<KeyboardArrowRightIcon />}>
-              Create
-            </Button>
-          </form>
-        </Container>
-      </div>
+      <TextField
+        label="name"
+        placeholder="routine name"
+        value={routineName}
+        onChange={(e) => setRoutineName(e.target.value)}
+      />
+      <TextField
+        label="goal"
+        placeholder="routine goal"
+        value={routineGoal}
+        onChange={(e) => setRoutineGoal(e.target.value)}
+      />
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          createRoutine(routineName, routineGoal);
+        }}
+      >
+        Create Routine
+      </Button>
     </>
   );
 };
 export default CreateRoutine;
+
+
+
+
+
+
+
+
+
+
+
+
+
