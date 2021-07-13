@@ -6,7 +6,7 @@ import {
   Delete as DeleteIcon,
 } from "@material-ui/icons";
 import { getActivities } from "../api";
-const FITNESS_TRACKR_API_URL='https://fitnesstrac-kr.herokuapp.com/api/'
+
 
 
 const RoutineRow = ({
@@ -42,7 +42,7 @@ const RoutineRow = ({
 
   const onSave = (id) => {
     setEditMode(false);
-    fetch(`${FITNESS_TRACKR_API_URL}routines/${id}`, {
+    fetch(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}routines/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const RoutineRow = ({
 
   const onDelete = (id) => {
     onRemoveRoutine();
-    fetch(`${FITNESS_TRACKR_API_URL}routines/${id}`, {
+    fetch(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}routines/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

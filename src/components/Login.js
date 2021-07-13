@@ -8,31 +8,28 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-const FITNESS_TRACKR_API_URL='https://fitnesstrac-kr.herokuapp.com/api/'
+export const HOME_ROUTE = "/home";
 
 const Login = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
-  const [errorMessage, setErrorMessage] = useState("");
-
+  const [errorMessage, setErrorMessage] = useState();
   const loginUser = async () => {
     return await axios
-      .get(`${FITNESS_TRACKR_API_URL}users/login`, {
+      .post(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}users/login`, {
         username,
         password,
       })
       .then(({ data: { token } }) => {
         if (token) {
           localStorage.setItem("token", JSON.stringify(token));
-          window.location.href = `${window.location.origin}/home`;
+          window.location.href = `${window.location.origin}${HOME_ROUTE}`;
         } else {
-          setErrorMessage("Incorrect Login");
+          setErrorMessage("Something went wrong");
         }
       })
-      .catch((error) => {
-        console.log(error);
-
-        setErrorMessage("Incorrect Login");
+      .catch(() => {
+        setErrorMessage("Something went wrong");
       });
   };
   const onFormSubmit = (event) => {

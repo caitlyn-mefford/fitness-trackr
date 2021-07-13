@@ -8,11 +8,39 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
-import { createRoutine } from "../api";
+import { getCurrentUser} from "../api";
 
 const CreateRoutine = () => {
   const [routineName, setRoutineName] = useState("");
   const [routineGoal, setRoutineGoal] = useState("");
+
+   const createRoutine = async (name, goal) => {
+    try {
+      const myToken = getCurrentUser();
+  
+      const response = await fetch(
+        `${process.env.REACT_APP_FITNESS_TRACKR_API_URL}routines`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${myToken}`,
+          },
+          body: JSON.stringify({
+            name,
+            goal,
+            isPublic: true,
+          }),
+        }
+      );
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
 
 
   createRoutine();

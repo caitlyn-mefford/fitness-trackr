@@ -14,7 +14,6 @@ const CreateActivity = () => {
   const [activityName, setActivityName] = useState("");
   const [activityDescription, setActivityDescription] = useState("");
 
-  //From API
   createActivity();
 
   const onFormSubmit = (event) => {

@@ -50,15 +50,6 @@ const Home = () => {
             gutterBottom>
             Welcome to Fitness Trackr!
           </Typography>
-          <Typography
-            className={classes.subTitle}
-            variant='h1'
-            color='secondary'
-            component='h2'
-            align='center'
-            gutterBottom>
-            Please log in or create an account!
-          </Typography>
         </Container>
       </div>
     </>

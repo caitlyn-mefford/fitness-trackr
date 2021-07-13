@@ -10,12 +10,11 @@ import {
   TableBody,
 } from "@material-ui/core";
 import RoutineRow from "./RoutineRow";
-const FITNESS_TRACKR_API_URL='https://fitnesstrac-kr.herokuapp.com/api/'
 
 const myUsernameFetch = (myToken) => {
   try {
     return axios
-      .get(`${FITNESS_TRACKR_API_URL}users/me`, {
+      .get(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}users/me`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${myToken}`,
@@ -33,7 +32,7 @@ const myRoutinesFetch = (username, myToken) => {
   try {
     return axios
       .get(
-        `${FITNESS_TRACKR_API_URL}users/${username}/routines`,
+        `${process.env.REACT_APP_FITNESS_TRACKR_API_URL}users/${username}/routines`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -82,8 +81,9 @@ const MyRoutines = () => {
             <TableCell align='right'></TableCell>
           </TableRow>
         </TableHead>
+        
         <TableBody>
-          {myRoutines.map((routine, idx) => {
+          {myRoutines && myRoutines.map((routine, idx) => {
             return (
               <RoutineRow
                 key={routine.id}

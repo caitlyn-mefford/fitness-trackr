@@ -6,18 +6,41 @@ import {
   makeStyles,
 } from "@material-ui/core";
 import { useState } from "react";
-import { registerUser } from "../api";
+// import { registerUser } from "../api";
 import KeyboardArrowRightIcon from "@material-ui/icons/KeyboardArrowRight";
+import axios from "axios";
+export const HOME_ROUTE = "/home";
 
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState();
+
+  const registerUser = async () => {
+    return await axios
+      .post(`${process.env.REACT_APP_FITNESS_TRACKR_API_URL}users/register`, {
+        username,
+        password,
+      })
+      .then(({ data: { token } }) => {
+        if (token) {
+          localStorage.setItem("token", JSON.stringify(token));
+          window.location.href = `${window.location.origin}${HOME_ROUTE}`;
+        } else {
+          setErrorMessage("Something went wrong");
+        }
+      })
+      .catch(() => {
+        setErrorMessage("Something went wrong");
+      });
+  };
 
  const onFormSubmit =  (event) => {
     event.preventDefault();
     console.log(username,password, "username, password");
     registerUser(username, password);
   };
+  
   
 
   const useStyles = makeStyles((theme) => ({
